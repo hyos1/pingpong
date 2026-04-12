@@ -12,7 +12,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler
     public ResponseEntity<ApiResponse<Void>> clientExHandler(ClientException e) {
-        log.warn("클라이언트 예외 발생: ", e.getMessage());
+        log.warn("클라이언트 예외 발생: {}", e.getMessage());
         ErrorCode errorCode = e.getErrorCode();
         ApiResponse<Void> failResponse = ApiResponse.fail(errorCode.getMessage());
         return ResponseEntity

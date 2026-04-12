@@ -100,6 +100,7 @@ const handleSubmit = async () => {
               onChange={handleChange}
               onKeyDown={handleKeyDown}
               placeholder="핑퐁 닉네임"
+              autoFocus
             />
           </div>
         )}
