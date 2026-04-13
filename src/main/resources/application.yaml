@@ -12,3 +12,7 @@ spring:
   output:
     ansi:
       enabled: always
+
+jwt:
+  secret:
+    key: akjbfiu23bfafnaji3889adskjndskjdsfnalaiweufh
