@@ -2,6 +2,7 @@ package com.example.pingpong.service;
 
 import com.example.pingpong.common.ClientException;
 import com.example.pingpong.common.ErrorCode;
+import com.example.pingpong.config.JwtUtil;
 import com.example.pingpong.domain.User;
 import com.example.pingpong.repository.UserRepository;
 import com.example.pingpong.service.dto.LoginResponse;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class AuthService {
 
+    private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
 
@@ -25,6 +27,8 @@ public class AuthService {
         if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
             throw new ClientException(ErrorCode.INVALID_PASSWORD);
         }
-        return new LoginResponse(user.getId(), user.getUsername(), user.getEmail());
+
+        String token = jwtUtil.createToken(user.getId(), user.getEmail());
+        return new LoginResponse(user.getId(), user.getUsername(), user.getEmail(), token);
     }
 }
