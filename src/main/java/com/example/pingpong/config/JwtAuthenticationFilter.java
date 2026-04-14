@@ -47,7 +47,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // Authorization 헤더가 없거나 "Bearer "로 시작하지 않으면 필터 건너뜀
         if (authorization == null || !authorization.startsWith("Bearer ")) {
-            if (!request.getRequestURI().equals("/api/users/signup") && !request.getRequestURI().equals("/api/auth/login")) {
+            if (!request.getRequestURI().equals("/api/users/signup") && !request.getRequestURI().equals("/api/auth/login") && !request.getRequestURI().startsWith("/ws/info")) {
                 log.info("오류 URI: {} ",request.getRequestURI());
             }
             filterChain.doFilter(request, response);
