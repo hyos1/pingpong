@@ -38,4 +38,18 @@ public class ChatRoomController {
         List<ChatRoomResponse> chatRooms = chatRoomService.getChatRooms(authUser.getUserId());
         return ResponseEntity.ok(ApiResponse.ok(chatRooms));
     }
+
+//    @GetMapping("/{chatRoomId}")
+//    public ResponseEntity<ApiResponse<Void>> getChatRoomInfo(@PathVariable("chatRoomId") Long chatRoomId) {
+//
+//    }
+
+    @GetMapping("/{chatRoomId}/messages")
+    public ResponseEntity<ApiResponse<List<MessageResponse>>> getMessages(
+            @PathVariable("chatRoomId") Long chatRoomId, @AuthenticationPrincipal AuthUser authUser) {
+        log.info("채팅방 ID: {}", chatRoomId);
+        List<MessageResponse> messages = messageService.getChatRoomMessage(chatRoomId);
+        ApiResponse<List<MessageResponse>> apiResponse = ApiResponse.ok(messages);
+        return ResponseEntity.ok(apiResponse);
+    }
 }
