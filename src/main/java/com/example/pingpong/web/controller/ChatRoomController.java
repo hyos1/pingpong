@@ -4,16 +4,16 @@ import com.example.pingpong.common.ApiResponse;
 import com.example.pingpong.service.ChatRoomService;
 import com.example.pingpong.service.MessageService;
 import com.example.pingpong.service.dto.ChatRoomResponse;
+import com.example.pingpong.service.dto.MessageResponse;
 import com.example.pingpong.web.dto.AuthUser;
 import com.example.pingpong.web.dto.CreateChatRoomRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -32,4 +32,10 @@ public class ChatRoomController {
         return ResponseEntity.ok(ApiResponse.ok("채팅방이 생성되었습니다.", response));
     }
 
+    // 내가 참여한 채팅방 목록 조회
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<ChatRoomResponse>>> getChatRooms(@AuthenticationPrincipal AuthUser authUser) {
+        List<ChatRoomResponse> chatRooms = chatRoomService.getChatRooms(authUser.getUserId());
+        return ResponseEntity.ok(ApiResponse.ok(chatRooms));
+    }
 }

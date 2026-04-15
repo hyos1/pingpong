@@ -1,12 +1,19 @@
 package com.example.pingpong.repository;
 
+import com.example.pingpong.domain.ChatRoom;
 import com.example.pingpong.domain.ChatRoomMember;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
+
 public interface ChatRoomMemberRepository extends JpaRepository<ChatRoomMember, Long> {
-   @Query("select count(cm) from ChatRoomMember cm " +
+
+    @Query("select cm.chatRoom from ChatRoomMember cm where cm.user.id = :userId")
+    List<ChatRoom> findChatRoomsByUserId(@Param("userId") Long userId);
+
+    @Query("select count(cm) from ChatRoomMember cm " +
             "where cm.chatRoom.id = :chatRoomId")
     int countByChatRoomId(@Param("chatRoomId") Long chatRoomId);
 }
