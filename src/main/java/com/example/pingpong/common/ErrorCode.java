@@ -6,6 +6,9 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum ErrorCode {
 
+    //Authenticate
+    TOKEN_NOT_FOUND(HttpStatus.BAD_REQUEST, "토큰이 비어있습니다."),
+
     //User
     DUPLICATE_EMAIL(HttpStatus.BAD_REQUEST, "이미 사용 중인 이메일입니다."),
     DUPLICATE_USERNAME(HttpStatus.BAD_REQUEST,"이미 사용 중인 닉네임입니다."),
