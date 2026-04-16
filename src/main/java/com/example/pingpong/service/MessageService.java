@@ -28,4 +28,12 @@ public class MessageService {
         return messageRepository.findByChatRoomId(chatRoomId);
     }
 
+    @Transactional
+    public MessageResponse saveMessage(Long chatRoomId, Long senderId, String content) {
+        User sender = userRepository.findById(senderId).orElseThrow(() -> new ClientException(ErrorCode.USER_NOT_FOUND));
+        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId).orElseThrow(() -> new ClientException(ErrorCode.CHAT_ROOM_NOT_FOUND));
+        Message message = Message.createMessage(content, sender, chatRoom);
+        messageRepository.save(message);
+        return new MessageResponse(message.getId(), message.getContent(), message.getSender().getUsername(), message.getCreatedAt());
+    }
 }
