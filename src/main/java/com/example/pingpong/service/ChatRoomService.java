@@ -23,6 +23,7 @@ public class ChatRoomService {
     private final UserRepository userRepository;
     private final ChatRoomMemberRepository chatRoomMemberRepository;
 
+    // 로그인 사용자의 채팅방 목록 조회
     public List<ChatRoomResponse> getChatRooms(Long userId) {
         List<ChatRoom> chatRooms = chatRoomMemberRepository.findChatRoomsByUserId(userId);
         return chatRooms.stream().map(c -> new ChatRoomResponse(
@@ -30,6 +31,7 @@ public class ChatRoomService {
         )).collect(Collectors.toList());
     }
 
+    // 채팅방 생성
     @Transactional
     public ChatRoomResponse createChatRoom(String name, Long userId) {
 

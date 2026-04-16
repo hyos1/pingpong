@@ -24,6 +24,7 @@ public class ChatRoomController {
     private final ChatRoomService chatRoomService;
     private final MessageService messageService;
 
+    // 채팅방 생성
     @PostMapping
     public ResponseEntity<ApiResponse<ChatRoomResponse>> createChatRoom(
             @RequestBody CreateChatRoomRequest request,
@@ -32,18 +33,14 @@ public class ChatRoomController {
         return ResponseEntity.ok(ApiResponse.ok("채팅방이 생성되었습니다.", response));
     }
 
-    // 내가 참여한 채팅방 목록 조회
+    // 로그인 사용자의 채팅방 목록 조회
     @GetMapping
     public ResponseEntity<ApiResponse<List<ChatRoomResponse>>> getChatRooms(@AuthenticationPrincipal AuthUser authUser) {
         List<ChatRoomResponse> chatRooms = chatRoomService.getChatRooms(authUser.getUserId());
         return ResponseEntity.ok(ApiResponse.ok(chatRooms));
     }
 
-//    @GetMapping("/{chatRoomId}")
-//    public ResponseEntity<ApiResponse<Void>> getChatRoomInfo(@PathVariable("chatRoomId") Long chatRoomId) {
-//
-//    }
-
+    // 특정 채팅방의 메세지 조회
     @GetMapping("/{chatRoomId}/messages")
     public ResponseEntity<ApiResponse<List<MessageResponse>>> getMessages(
             @PathVariable("chatRoomId") Long chatRoomId, @AuthenticationPrincipal AuthUser authUser) {

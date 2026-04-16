@@ -20,6 +20,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
 
+    // 로그인
     @Transactional
     public LoginResponse login(String email, String rawPassword) {
         User user = userRepository.findByEmail(email).orElseThrow(

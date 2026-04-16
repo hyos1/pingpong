@@ -1,4 +1,4 @@
-package com.example.pingpong.web.controller;
+package com.example.pingpong.web.dto;
 
 import lombok.Getter;
 

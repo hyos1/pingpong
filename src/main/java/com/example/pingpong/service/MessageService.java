@@ -24,10 +24,12 @@ public class MessageService {
     private final ChatRoomRepository chatRoomRepository;
     private final MessageRepository messageRepository;
 
+    // 특정 채팅방의 메세지 조회
     public List<MessageResponse> getChatRoomMessage(Long chatRoomId) {
         return messageRepository.findByChatRoomId(chatRoomId);
     }
 
+    // 특정 채팅방에 보낸 메세지 저장
     @Transactional
     public MessageResponse saveMessage(Long chatRoomId, Long senderId, String content) {
         User sender = userRepository.findById(senderId).orElseThrow(() -> new ClientException(ErrorCode.USER_NOT_FOUND));

@@ -2,6 +2,7 @@ package com.example.pingpong.web.controller;
 
 import com.example.pingpong.service.MessageService;
 import com.example.pingpong.service.dto.MessageResponse;
+import com.example.pingpong.web.dto.SendMessageRequestDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -19,6 +20,7 @@ public class ChatController {
     private final SimpMessagingTemplate template;
     private final MessageService messageService;
 
+    // 메세지 전송 시 구독한 채팅방에 전달
     @MessageMapping("/chat/{chatRoomId}")
     public void sendMessage(@DestinationVariable("chatRoomId") Long chatRoomId,
                             SendMessageRequestDto request,

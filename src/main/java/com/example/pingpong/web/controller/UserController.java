@@ -19,6 +19,7 @@ public class UserController {
 
     private final UserService userService;
 
+    // 회원가입
     @PostMapping("/signup")
     public ResponseEntity<ApiResponse<Void>> createUser(@RequestBody SignupRequestDto request) {
         userService.createUser(request.getUsername(), request.getEmail(), request.getPassword());

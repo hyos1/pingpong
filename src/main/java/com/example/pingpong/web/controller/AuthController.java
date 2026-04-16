@@ -18,6 +18,7 @@ public class AuthController {
 
     private final AuthService authService;
 
+    // JWT 로그인
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<LoginResponse>> login(@RequestBody LoginRequest request) {
         LoginResponse loginResponse = authService.login(request.getEmail(), request.getPassword());
