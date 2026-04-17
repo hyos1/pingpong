@@ -4,9 +4,11 @@ import com.example.pingpong.common.ApiResponse;
 import com.example.pingpong.service.ChatRoomService;
 import com.example.pingpong.service.MessageService;
 import com.example.pingpong.service.dto.ChatRoomResponse;
+import com.example.pingpong.service.dto.InviteResponse;
 import com.example.pingpong.service.dto.MessageResponse;
 import com.example.pingpong.web.dto.AuthUser;
 import com.example.pingpong.web.dto.CreateChatRoomRequest;
+import com.example.pingpong.web.dto.InviteRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -47,6 +49,14 @@ public class ChatRoomController {
         log.info("채팅방 ID: {}", chatRoomId);
         List<MessageResponse> messages = messageService.getChatRoomMessage(chatRoomId);
         ApiResponse<List<MessageResponse>> apiResponse = ApiResponse.ok(messages);
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    // 회원 초대
+    @PostMapping("/{chatRoomId}/members")
+    public ResponseEntity<ApiResponse<InviteResponse>> inviteUser(@PathVariable Long chatRoomId, @RequestBody InviteRequest request) {
+        InviteResponse inviteResponse = chatRoomService.inviteUser(chatRoomId, request.getUserId());
+        ApiResponse<InviteResponse> apiResponse = ApiResponse.ok(inviteResponse);
         return ResponseEntity.ok(apiResponse);
     }
 }
