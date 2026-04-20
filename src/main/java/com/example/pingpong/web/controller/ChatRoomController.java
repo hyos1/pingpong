@@ -45,9 +45,12 @@ public class ChatRoomController {
     // 특정 채팅방의 메세지 조회
     @GetMapping("/{chatRoomId}/messages")
     public ResponseEntity<ApiResponse<List<MessageResponse>>> getMessages(
-            @PathVariable("chatRoomId") Long chatRoomId, @AuthenticationPrincipal AuthUser authUser) {
+            @PathVariable("chatRoomId") Long chatRoomId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @AuthenticationPrincipal AuthUser authUser) {
         log.info("채팅방 ID: {}", chatRoomId);
-        List<MessageResponse> messages = messageService.getChatRoomMessage(chatRoomId);
+        List<MessageResponse> messages = messageService.getChatRoomMessage(chatRoomId, page, size);
         ApiResponse<List<MessageResponse>> apiResponse = ApiResponse.ok(messages);
         return ResponseEntity.ok(apiResponse);
     }
