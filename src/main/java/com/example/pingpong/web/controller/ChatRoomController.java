@@ -62,4 +62,13 @@ public class ChatRoomController {
         ApiResponse<InviteResponse> apiResponse = ApiResponse.ok(inviteResponse);
         return ResponseEntity.ok(apiResponse);
     }
+
+    @DeleteMapping("/{chatRoomId}")
+    public ResponseEntity<ApiResponse<Void>> deleteChatRoom(
+            @PathVariable Long chatRoomId,
+            @AuthenticationPrincipal AuthUser authUser) {
+        chatRoomService.deleteChatRoom(chatRoomId, authUser);
+        ApiResponse<Void> apiResponse = ApiResponse.ok("채팅방이 삭제되었습니다.", null);
+        return ResponseEntity.ok(apiResponse);
+    }
 }

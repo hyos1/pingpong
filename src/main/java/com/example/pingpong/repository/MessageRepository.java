@@ -26,4 +26,7 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
     // 페이징 적용 메세지 조회 쿼리
     @EntityGraph(attributePaths = {"sender"})
     Page<Message> findByChatRoomId(Long chatRoomId, Pageable pageable);
+
+    // 채팅방 ID에 해당하는 메세지 전부 삭제
+    void deleteByChatRoomId(Long chatRoomId);
 }

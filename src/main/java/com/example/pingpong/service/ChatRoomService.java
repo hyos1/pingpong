@@ -7,9 +7,11 @@ import com.example.pingpong.domain.ChatRoomMember;
 import com.example.pingpong.domain.User;
 import com.example.pingpong.repository.ChatRoomMemberRepository;
 import com.example.pingpong.repository.ChatRoomRepository;
+import com.example.pingpong.repository.MessageRepository;
 import com.example.pingpong.repository.UserRepository;
 import com.example.pingpong.service.dto.ChatRoomResponse;
 import com.example.pingpong.service.dto.InviteResponse;
+import com.example.pingpong.web.dto.AuthUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +27,7 @@ public class ChatRoomService {
     private final UserRepository userRepository;
     private final ChatRoomRepository chatRoomRepository;
     private final ChatRoomMemberRepository chatRoomMemberRepository;
+    private final MessageRepository messageRepository;
 
     // 로그인 사용자의 채팅방 목록 조회
     public List<ChatRoomResponse> getChatRooms(Long userId) {
@@ -59,5 +62,16 @@ public class ChatRoomService {
         ChatRoomMember chatRoomMember = ChatRoomMember.createChatRoomMember(user);
         chatRoom.inviteMember(chatRoomMember);
         return new InviteResponse(user.getId(), user.getUsername());
+    }
+
+    @Transactional
+    public void deleteChatRoom(Long chatRoomId, AuthUser authUser) {
+        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
+                .orElseThrow(() -> new ClientException(ErrorCode.CHAT_ROOM_NOT_FOUND));
+
+        // 메세지 삭제 후
+        messageRepository.deleteByChatRoomId(chatRoomId);
+        // 채팅방 삭제
+        chatRoomRepository.delete(chatRoom);
     }
 }
