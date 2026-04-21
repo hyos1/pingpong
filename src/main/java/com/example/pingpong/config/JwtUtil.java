@@ -19,7 +19,7 @@ import java.util.Date;
 public class JwtUtil {
 
     private static final String BEARER_PREFIX = "Bearer ";
-    private static final long TOKEN_TIME = 60 * 1000L; // 1분
+    private static final long TOKEN_TIME = 60 * 60 * 1000L; // 1분
 
     @Value("${jwt.secret.key}")
     private String secretKey;

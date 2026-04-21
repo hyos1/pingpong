@@ -3,13 +3,12 @@ package com.example.pingpong.web.controller;
 import com.example.pingpong.common.ApiResponse;
 import com.example.pingpong.service.AuthService;
 import com.example.pingpong.service.dto.LoginResponse;
+import com.example.pingpong.web.dto.AuthUser;
 import com.example.pingpong.web.dto.LoginRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -17,6 +16,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final AuthService authService;
+
+    @GetMapping("/me")
+    public ResponseEntity<ApiResponse<LoginResponse>> getMe(@AuthenticationPrincipal AuthUser authUser) {
+        LoginResponse response = authService.getMe(authUser.getUserId());
+        ApiResponse<LoginResponse> apiResponse = ApiResponse.ok(response);
+        return ResponseEntity.ok(apiResponse);
+    }
 
     // JWT 로그인
     @PostMapping("/login")

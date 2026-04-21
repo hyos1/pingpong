@@ -33,4 +33,10 @@ public class AuthService {
         String token = jwtUtil.createToken(user.getId(), user.getEmail());
         return new LoginResponse(user.getId(), user.getUsername(), user.getEmail(), token);
     }
+
+    public LoginResponse getMe(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new ClientException(ErrorCode.USER_NOT_FOUND));
+        String token = jwtUtil.createToken(user.getId(), user.getEmail());
+        return new LoginResponse(user.getId(), user.getUsername(), user.getEmail(), token);
+    }
 }
