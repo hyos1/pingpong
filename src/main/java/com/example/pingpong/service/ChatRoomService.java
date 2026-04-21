@@ -38,21 +38,26 @@ public class ChatRoomService {
     @Transactional
     public ChatRoomResponse createChatRoom(String name, Long userId) {
 
-        User user = userRepository.findById(userId).orElseThrow(
-                () -> new ClientException(ErrorCode.USER_NOT_FOUND));
+        User user = userRepository.findById(userId).orElseThrow(() -> new ClientException(ErrorCode.USER_NOT_FOUND));
+
+        // 채팅방 생성
+        ChatRoomMember chatRoomMember = ChatRoomMember.createChatRoomMember(user); // 유저만 세팅
         ChatRoom chatRoom = ChatRoom.createChatRoom(name);
-        ChatRoomMember chatRoomMember = ChatRoomMember.createChatRoomMember(user, chatRoom);
-        chatRoomMemberRepository.save(chatRoomMember);
+        // 회원 초대
+        chatRoom.inviteMember(chatRoomMember); // 유저 초대
+        chatRoomRepository.save(chatRoom);
 
         int count = chatRoomMemberRepository.countByChatRoomId(chatRoom.getId());
         return new ChatRoomResponse(chatRoom.getId(), chatRoom.getName(), count);
     }
 
+    @Transactional
     public InviteResponse inviteUser(Long chatRoomId, Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new ClientException(ErrorCode.USER_NOT_FOUND));
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId).orElseThrow(() -> new ClientException(ErrorCode.CHAT_ROOM_NOT_FOUND));
-        ChatRoomMember chatRoomMember = ChatRoomMember.createChatRoomMember(user, chatRoom);
-        chatRoomMemberRepository.save(chatRoomMember);
+
+        ChatRoomMember chatRoomMember = ChatRoomMember.createChatRoomMember(user);
+        chatRoom.inviteMember(chatRoomMember);
         return new InviteResponse(user.getId(), user.getUsername());
     }
 }
