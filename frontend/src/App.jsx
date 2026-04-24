@@ -1,22 +1,26 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import LoginPage from "./pages/LoginPage";
-import ChatPage from "./pages/ChatPage";
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "./assets/vite.svg";
-import heroImg from "./assets/hero.png";
-import "./App.css";
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { useAuth } from './context/AuthContext';
+import LoginPage from './pages/LoginPage';
+import ChatPage from './pages/ChatPage';
 
-function App() {
+function PrivateRoute({ children }) {
+  const { user, authLoading } = useAuth();
+  if (authLoading) return null; // 검증 중엔 빈 화면
+  return user ? children : <Navigate to="/login" />;
+}
+
+export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<LoginPage />}></Route>
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/chat" element={<ChatPage />} />
+        <Route path="/chat" element={
+          <PrivateRoute>
+            <ChatPage />
+          </PrivateRoute>
+        } />
+        <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
     </BrowserRouter>
   );
 }
-
-export default App;
