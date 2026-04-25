@@ -19,7 +19,8 @@ import java.util.Date;
 public class JwtUtil {
 
     private static final String BEARER_PREFIX = "Bearer ";
-    private static final long TOKEN_TIME = 60 * 60 * 1000L; // 1분
+    private static final long TOKEN_TIME = 60 * 1000L; // 1분
+    private static final long REFRESH_TOKEN_TIME = 3 * 60 * 1000L; // 3분
 
     @Value("${jwt.secret.key}")
     private String secretKey;
@@ -43,6 +44,16 @@ public class JwtUtil {
                         .setIssuedAt(date)
                         .signWith(key, signatureAlgorithm)
                         .compact();
+    }
+
+    public String createRefreshToken(Long userId) {
+        Date date = new Date();
+        return Jwts.builder()
+                .setSubject(String.valueOf(userId))
+                .setExpiration(new Date(date.getTime() + REFRESH_TOKEN_TIME))
+                .setIssuedAt(date)
+                .signWith(key, signatureAlgorithm)
+                .compact();
     }
 
     public String subStringToken(String tokenValue) {
