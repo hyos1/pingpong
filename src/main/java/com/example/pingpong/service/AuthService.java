@@ -9,6 +9,7 @@ import com.example.pingpong.repository.RefreshTokenRepository;
 import com.example.pingpong.repository.UserRepository;
 import com.example.pingpong.service.dto.LoginResponse;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -50,7 +51,12 @@ public class AuthService {
 
     // 엑세스 토큰 재발급
     public String reissue(String refreshToken) {
-        Claims claims = jwtUtil.extractClaims(refreshToken);
+        Claims claims;
+        try {
+            claims = jwtUtil.extractClaims(refreshToken);
+        } catch (ExpiredJwtException e) {
+            throw new ClientException(ErrorCode.REFRESH_TOKEN_EXPIRED);
+        }
         Long userId = Long.valueOf(claims.getSubject());
         User user = userRepository.findById(userId).orElseThrow(() -> new ClientException(ErrorCode.USER_NOT_FOUND));
 

@@ -5,6 +5,17 @@ spring:
     password:
     driver-class-name: org.h2.Driver
 
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id:
+            client-secret:
+            scope:
+              - email
+              - profile
+
   jpa:
     hibernate:
       ddl-auto: create
