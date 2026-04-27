@@ -66,10 +66,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private boolean isWhiteList(String requestURI) {
-        if (requestURI.equals("/api/users/signup")) {
-            return true;
-        }
-        if (requestURI.equals("/api/auth/login")) {
+        if (requestURI.equals("/api/users/signup") || requestURI.equals("/api/auth/login") || requestURI.equals("/api/auth/refresh")) {
             return true;
         }
         return false;
@@ -103,8 +100,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         Long userId = Long.valueOf(claims.getSubject());
         // 커스텀 Claims에서 email 추출
         String email = claims.get("email", String.class);
-        // 커스텀 Claims에서 email 추출하여 enum으로 변환 todo 추후 userRole추가
-//        UserRole userRole = UserRole.of(claims.get("userRole", String.class));
 
         // 추출한 정보로 인증된 사용자 객체 생성
         AuthUser authUser = new AuthUser(userId, email, UserRole.ROLE_USER);
