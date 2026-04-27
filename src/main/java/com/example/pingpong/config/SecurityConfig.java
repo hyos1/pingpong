@@ -47,7 +47,8 @@ public class SecurityConfig {
                 .rememberMe(AbstractHttpConfigurer::disable)
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/users/signup", "/api/auth/login", "/ws/**").permitAll()
+                        .requestMatchers("/api/users/signup", "/api/auth/login",
+                                "/api/auth/refresh", "/ws/**").permitAll()
                         .anyRequest().authenticated()
                 );
         return http.build();
