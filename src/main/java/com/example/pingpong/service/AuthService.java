@@ -11,10 +11,12 @@ import com.example.pingpong.service.dto.LoginResponse;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -46,6 +48,8 @@ public class AuthService {
     public LoginResponse getMe(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new ClientException(ErrorCode.USER_NOT_FOUND));
         String accessToken = jwtUtil.createToken(user.getId(), user.getEmail());
+      log.info("AuthService User정보: {}", user);
+      log.info("AuthService Token값: {}", accessToken);
         return new LoginResponse(user.getId(), user.getUsername(), user.getEmail(), accessToken, null);
     }
 

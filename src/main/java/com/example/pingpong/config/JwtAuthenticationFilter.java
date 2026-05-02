@@ -44,6 +44,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // Authorization 헤더 값 가져오기 ex) Bearer dsfasfafe.sefsfae.sfesa
         String authorization = request.getHeader("Authorization");
+        log.info("JwtFilter에 온 Token값: {}", authorization);
 
         // Authorization 헤더가 없거나 "Bearer "로 시작하지 않으면 필터 건너뜀
         if (authorization == null || !authorization.startsWith("Bearer ")) {
@@ -66,7 +67,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private boolean isWhiteList(String requestURI) {
-        if (requestURI.equals("/api/users/signup") || requestURI.equals("/api/auth/login") || requestURI.equals("/api/auth/refresh")) {
+        if (requestURI.equals("/api/users/signup")
+                || requestURI.equals("/api/auth/login")
+                || requestURI.equals("/api/auth/refresh")
+                || requestURI.startsWith("/oauth2/")
+                || requestURI.startsWith("/login/oauth2/")
+        ) {
             return true;
         }
         return false;
@@ -77,8 +83,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             // JWT 토큰 값에서 Claims(토큰에 담긴 정보) 추출
             Claims claims = jwtUtil.extractClaims(jwt);
 
+            log.info("Jwt Claims: {}", claims);
+
             // SecurityContext에 인증 정보 없으면 세팅
             if (SecurityContextHolder.getContext().getAuthentication() == null) {
+                log.info("인증정보 없어서 setAuthentication 호출?");
                 setAuthentication(claims);
             }
             return true;
