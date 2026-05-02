@@ -46,11 +46,6 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         log.info("인증 유저: {}", user);
         refreshTokenService.save(user.getId(), refreshToken);
 
-        // 인증 객체 AuthUser로 통일
-        AuthUser authUser = new AuthUser(user.getId(), user.getEmail(), UserRole.ROLE_USER);
-        Authentication newauth = new JwtAuthenticationToken(authUser);
-        SecurityContextHolder.getContext().setAuthentication(newauth);
-
         // 프론트 콜백으로 리다이렉트 — 토큰을 쿼리파라미터로 전달
         String encodedUsername = URLEncoder.encode(user.getUsername(), StandardCharsets.UTF_8);
         String redirectUrl = String.format(
