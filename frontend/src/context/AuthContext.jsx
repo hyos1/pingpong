@@ -1,11 +1,11 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { getMe } from '../api/auth';
+import { getMe, logoutApi } from '../api/auth';
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [authLoading, setAuthLoading] = useState(true); // 검증 중 플래그
+  const [authLoading, setAuthLoading] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -13,30 +13,34 @@ export function AuthProvider({ children }) {
       setAuthLoading(false);
       return;
     }
-    // 토큰 있으면 서버에 검증 요청
     getMe()
       .then((res) => {
         const { userId, username, email } = res.data.data;
+        // getMe 응답으로 온 새 토큰도 갱신
+        if (res.data.data.token) {
+          localStorage.setItem('token', res.data.data.token);
+        }
         setUser({ userId, username, email });
       })
       .catch(() => {
-        // 토큰 만료 or 유저 없음 → 싹 지우기
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
+        localStorage.clear();
         setUser(null);
       })
       .finally(() => setAuthLoading(false));
   }, []);
 
-  const login = (userData, token) => {
+  const login = (userData, token, refreshToken) => {
     localStorage.setItem('user', JSON.stringify(userData));
     localStorage.setItem('token', token);
-    setUser(userData);
+    if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
+    setUser(userData);  // 이게 실행되면 PrivateRoute가 통과시켜줌
   };
 
-  const logout = () => {
-    localStorage.removeItem('user');
-    localStorage.removeItem('token');
+  const logout = async () => {
+    try {
+      await logoutApi();
+    } catch (e) {}
+    localStorage.clear();
     setUser(null);
   };
 
