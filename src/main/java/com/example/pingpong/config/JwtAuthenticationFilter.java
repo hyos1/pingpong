@@ -1,6 +1,7 @@
 package com.example.pingpong.config;
 
 import com.example.pingpong.common.ApiResponse;
+import com.example.pingpong.common.ClientException;
 import com.example.pingpong.enums.UserRole;
 import com.example.pingpong.web.dto.AuthUser;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -46,19 +47,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String authorization = request.getHeader("Authorization");
         log.info("JwtFilter에 온 Token값: {}", authorization);
 
-        // Authorization 헤더가 없거나 "Bearer "로 시작하지 않으면 필터 건너뜀
-        if (authorization == null || !authorization.startsWith("Bearer ")) {
-            if (!request.getRequestURI().equals("/api/users/signup") && !request.getRequestURI().equals("/api/auth/login") && !request.getRequestURI().startsWith("/ws/info")) {
-                log.info("오류 URI: {} ",request.getRequestURI());
+        try {
+            // "Bearer "를 뺀 토큰 값만 추출
+            String jwt = jwtUtil.subStringToken(authorization);
+            // JWT 검증 및 인증 설정
+            if (!processAuthentication(jwt, request, response)) {
+                return;
             }
-            filterChain.doFilter(request, response);
-            return;
-        }
-        // "Bearer "를 뺀 토큰 값만 추출
-        String jwt = jwtUtil.subStringToken(authorization);
-
-        // JWT 검증 및 인증 설정
-        if (!processAuthentication(jwt, request, response)) {
+        } catch (ClientException e) {
+            log.warn("토큰 형식이 맞지 않습니다. 요청 URI: {}", request.getRequestURI());
+            sendErrorResponse(response, e.getErrorCode().getStatus(), e.getMessage());
             return;
         }
 
@@ -87,7 +85,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             // SecurityContext에 인증 정보 없으면 세팅
             if (SecurityContextHolder.getContext().getAuthentication() == null) {
-                log.info("인증정보 없어서 setAuthentication 호출?");
+                log.info("인증정보 없어서 setAuthentication 호출");
                 setAuthentication(claims);
             }
             return true;
