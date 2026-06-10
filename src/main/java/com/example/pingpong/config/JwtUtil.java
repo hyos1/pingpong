@@ -1,5 +1,7 @@
 package com.example.pingpong.config;
 
+import com.example.pingpong.common.ClientException;
+import com.example.pingpong.common.ErrorCode;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -20,7 +22,7 @@ public class JwtUtil {
 
     private static final String BEARER_PREFIX = "Bearer ";
     private static final long TOKEN_TIME = 60 * 1000L; // 1분
-    private static final long REFRESH_TOKEN_TIME = 3 * 60 * 1000L; // 3분
+    private static final long REFRESH_TOKEN_TIME = 2 * 60 * 1000L; // 3분
 
     @Value("${jwt.secret.key}")
     private String secretKey;
@@ -57,11 +59,14 @@ public class JwtUtil {
     }
 
     public String subStringToken(String tokenValue) {
-        if (StringUtils.hasText(tokenValue) && tokenValue.startsWith(BEARER_PREFIX)) {
-            return tokenValue.substring(7);
+        if (!StringUtils.hasText(tokenValue)) {
+            throw new ClientException(ErrorCode.TOKEN_NOT_FOUND);
         }
-        log.error("Not Found Token");
-        throw new NullPointerException("Not Found Token");
+
+        if (!tokenValue.startsWith(BEARER_PREFIX)) {
+            throw new ClientException(ErrorCode.INVALID_TOKEN);
+        }
+        return tokenValue.substring(7);
     }
 
     public Claims extractClaims(String token) {
