@@ -20,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -31,6 +32,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
     private final ObjectMapper objectMapper;
+    private final AntPathMatcher pathMatcher = new AntPathMatcher();
+    public static final String[] WHITE_LIST = {
+            "/api/users/signup", "/api/auth/login", "/api/auth/refresh"
+            ,"/oauth2/**", "/login/oauth2/**", "/ws/**"
+    };
 
     @Override
     protected void doFilterInternal(
@@ -38,8 +44,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
+
         if (isWhiteList(request.getRequestURI())) {
-            doFilter(request, response, filterChain);
+            filterChain.doFilter(request, response);
             return;
         }
 
@@ -60,19 +67,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        // 검증 성공 후 다음 필터 실행
         filterChain.doFilter(request, response);
     }
 
     private boolean isWhiteList(String requestURI) {
-        if (requestURI.equals("/api/users/signup")
-                || requestURI.equals("/api/auth/login")
-                || requestURI.equals("/api/auth/refresh")
-                || requestURI.startsWith("/oauth2/")
-                || requestURI.startsWith("/login/oauth2/")
-        ) {
-            return true;
+        for (String list : WHITE_LIST) {
+            if (pathMatcher.match(list, requestURI)) {
+                log.info("화이트 리스트 통과!: {}", requestURI);
+                return true;
+            }
         }
+        log.info("화이트 리스트 해당안됨!: {}", requestURI);
         return false;
     }
 

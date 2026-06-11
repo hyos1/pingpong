@@ -57,14 +57,7 @@ public class SecurityConfig {
                 .rememberMe(AbstractHttpConfigurer::disable)
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "/api/users/signup",
-                                "/api/auth/login",
-                                "/api/auth/refresh",
-                                "/ws/**",
-                                "/login/oauth2/**",
-                                "/oauth2/**"
-                        ).permitAll()
+                        .requestMatchers(JwtAuthenticationFilter.WHITE_LIST).permitAll()
                         .anyRequest().authenticated()
                 );
         return http.build();
