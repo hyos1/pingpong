@@ -110,11 +110,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private void setAuthentication(Claims claims) {
         // JWT subject에서 사용자 ID 추출
         Long userId = Long.valueOf(claims.getSubject());
-        // 커스텀 Claims에서 email 추출
+        // 커스텀 Claims에서 email, userRole 추출
         String email = claims.get("email", String.class);
+        UserRole role = UserRole.of(claims.get("userRole", String.class));
 
         // 추출한 정보로 인증된 사용자 객체 생성
-        AuthUser authUser = new AuthUser(userId, email, UserRole.ROLE_USER);
+        AuthUser authUser = new AuthUser(userId, email, role);
 
         // 인증된 사용자를 넘겨서 Security가 인식할 수 있는 Authentication 객체 생성
         Authentication authentication = new JwtAuthenticationToken(authUser);
