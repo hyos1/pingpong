@@ -37,7 +37,7 @@ public class AuthService {
             throw new ClientException(ErrorCode.INVALID_PASSWORD);
         }
 
-        String accessToken = jwtUtil.createToken(user.getId(), user.getEmail());
+        String accessToken = jwtUtil.createToken(user.getId(), user.getEmail(), user.getRole());
         String refreshToken = jwtUtil.createRefreshToken(user.getId());
         refreshTokenRepository.findByUserId(user.getId()).ifPresentOrElse(
                 rt -> rt.updateToken(refreshToken),
@@ -46,8 +46,9 @@ public class AuthService {
     }
 
     public LoginResponse getMe(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new ClientException(ErrorCode.USER_NOT_FOUND));
-        String accessToken = jwtUtil.createToken(user.getId(), user.getEmail());
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new ClientException(ErrorCode.USER_NOT_FOUND));
+        String accessToken = jwtUtil.createToken(user.getId(), user.getEmail(), user.getRole());
       log.info("AuthService User정보: {}", user);
       log.info("AuthService Token값: {}", accessToken);
         return new LoginResponse(user.getId(), user.getUsername(), user.getEmail(), accessToken, null);
@@ -68,7 +69,7 @@ public class AuthService {
         if (!findRefreshToken.getToken().equals(refreshToken)) {
             throw new ClientException(ErrorCode.INVALID_TOKEN);
         }
-        return jwtUtil.createToken(user.getId(), user.getEmail());
+        return jwtUtil.createToken(user.getId(), user.getEmail(), user.getRole());
     }
 
     public void logout(Long userId) {

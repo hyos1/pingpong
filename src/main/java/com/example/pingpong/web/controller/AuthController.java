@@ -18,6 +18,7 @@ public class AuthController {
 
     private final AuthService authService;
 
+    // 현재 인증된 사용자 정보 조회(리액트 새로고침 시)
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<LoginResponse>> getMe(@AuthenticationPrincipal AuthUser authUser) {
         LoginResponse response = authService.getMe(authUser.getUserId());
