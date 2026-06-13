@@ -22,15 +22,12 @@ public class ChatRoomMember extends BaseEntity {
     @JoinColumn(name = "chat_room_id")
     private ChatRoom chatRoom;
 
-    public ChatRoomMember(User user) {
+    private ChatRoomMember(ChatRoom chatRoom, User user) {
+        this.chatRoom = chatRoom;
         this.user = user;
     }
 
-    protected void setChatRoom(ChatRoom chatRoom) {
-        this.chatRoom = chatRoom;
-    }
-
-    public static ChatRoomMember createChatRoomMember(User user) {
-        return new ChatRoomMember(user);
+    public static ChatRoomMember createChatRoomMember(ChatRoom chatRoom, User user) {
+        return new ChatRoomMember(chatRoom, user);
     }
 }
