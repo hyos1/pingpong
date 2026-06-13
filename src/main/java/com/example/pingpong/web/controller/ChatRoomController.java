@@ -47,8 +47,7 @@ public class ChatRoomController {
     public ResponseEntity<ApiResponse<List<MessageResponse>>> getMessages(
             @PathVariable("chatRoomId") Long chatRoomId,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @AuthenticationPrincipal AuthUser authUser) {
+            @RequestParam(defaultValue = "10") int size) {
         log.info("채팅방 ID: {}", chatRoomId);
         List<MessageResponse> messages = messageService.getChatRoomMessage(chatRoomId, page, size);
         ApiResponse<List<MessageResponse>> apiResponse = ApiResponse.ok(messages);
@@ -65,9 +64,8 @@ public class ChatRoomController {
 
     @DeleteMapping("/{chatRoomId}")
     public ResponseEntity<ApiResponse<Void>> deleteChatRoom(
-            @PathVariable Long chatRoomId,
-            @AuthenticationPrincipal AuthUser authUser) {
-        chatRoomService.deleteChatRoom(chatRoomId, authUser);
+            @PathVariable Long chatRoomId) {
+        chatRoomService.deleteChatRoom(chatRoomId);
         ApiResponse<Void> apiResponse = ApiResponse.ok("채팅방이 삭제되었습니다.", null);
         return ResponseEntity.ok(apiResponse);
     }
