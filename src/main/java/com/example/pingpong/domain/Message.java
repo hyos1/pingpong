@@ -24,7 +24,7 @@ public class Message extends BaseEntity {
     @JoinColumn(name = "chat_room_id")
     private ChatRoom chatRoom;
 
-    public Message(String content, User sender, ChatRoom chatRoom) {
+    private Message(String content, User sender, ChatRoom chatRoom) {
         this.content = content;
         this.sender = sender;
         this.chatRoom = chatRoom;

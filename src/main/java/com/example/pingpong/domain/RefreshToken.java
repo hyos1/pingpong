@@ -21,7 +21,7 @@ public class RefreshToken {
     @Column(nullable = false)
     private String token;
 
-    public RefreshToken(Long userId, String token) {
+    private RefreshToken(Long userId, String token) {
         this.userId = userId;
         this.token = token;
     }
