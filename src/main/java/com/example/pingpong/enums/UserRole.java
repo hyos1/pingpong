@@ -4,23 +4,28 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Arrays;
+
 @Slf4j
-@Getter
 @RequiredArgsConstructor
 public enum UserRole {
 
-    ROLE_USER(Authority.USER),
-    ROLE_ADMIN(Authority.ADMIN);
+    USER(Authority.USER),
+    ADMIN(Authority.ADMIN);
 
     private final String userRole;
 
-//    public static UserRole of(String role) {
-//        log.info("role: {}", role);
-//        return Arrays.stream(UserRole.values())
-//                .filter(r -> r.name().equalsIgnoreCase(role))
-//                .findFirst()
-//                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 UserRole"));
-//    }
+    public String getAuthority() {
+        return this.userRole; // ROLE_USER or ROLE_ADMIN 반환
+    }
+
+    public static UserRole of(String role) {
+        log.info("role: {}", role);
+        return Arrays.stream(UserRole.values())
+                .filter(r -> r.name().equalsIgnoreCase(role))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 UserRole"));
+    }
 
     public static class Authority {
         public static final String USER = "ROLE_USER";
