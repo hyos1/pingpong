@@ -19,7 +19,7 @@ public class AuthUser implements Principal {
     public AuthUser(Long userId, String email, UserRole userRole) {
         this.userId = userId;
         this.email = email;
-        this.authorities = List.of(new SimpleGrantedAuthority(userRole.name()));
+        this.authorities = List.of(new SimpleGrantedAuthority(userRole.getAuthority()));
     }
 
     @Override

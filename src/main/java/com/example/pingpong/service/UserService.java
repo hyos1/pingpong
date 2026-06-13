@@ -3,6 +3,7 @@ package com.example.pingpong.service;
 import com.example.pingpong.common.ClientException;
 import com.example.pingpong.common.ErrorCode;
 import com.example.pingpong.domain.User;
+import com.example.pingpong.enums.UserRole;
 import com.example.pingpong.repository.ChatRoomMemberRepository;
 import com.example.pingpong.repository.UserRepository;
 import com.example.pingpong.service.dto.UserResponse;
@@ -32,7 +33,7 @@ public class UserService {
         }
 
         String encodedPassword = passwordEncoder.encode(rawPassword);
-        User user = User.createUser(name, email, encodedPassword);
+        User user = User.createUser(name, email, encodedPassword, UserRole.USER); // 가입 시 권한은 USER
         userRepository.save(user);
     }
 
