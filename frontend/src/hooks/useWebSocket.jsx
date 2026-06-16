@@ -7,10 +7,8 @@ export default function useWebSocket(chatRoomId, onMessageReceived) {
   const [connected, setConnected] = useState(false);
 
   useEffect(() => {
-    // chatRoomId 없으면 연결 안 함
     if (!chatRoomId) return;
 
-    // 이전 연결 정리
     if (clientRef.current) {
       clientRef.current.deactivate();
       clientRef.current = null;
@@ -22,7 +20,7 @@ export default function useWebSocket(chatRoomId, onMessageReceived) {
     const client = new Client({
       webSocketFactory: () => new SockJS('http://localhost:8080/ws'),
       connectHeaders: {
-        Authorization: token,  // STOMP connect 시점에 토큰 전달
+        Authorization: token,
       },
       onConnect: () => {
         setConnected(true);
@@ -31,17 +29,39 @@ export default function useWebSocket(chatRoomId, onMessageReceived) {
           onMessageReceived(message);
         });
       },
-      onDisconnect: () => setConnected(false),
       onStompError: (frame) => {
-        console.error('STOMP 오류:', frame);
+        const errorCode = frame.headers['errorCode'];
+        console.error('STOMP 오류:', errorCode, frame);
+
+        if (errorCode === 'TOKEN_EXPIRED' || errorCode === 'REFRESH_TOKEN_EXPIRED') {
+          // 토큰 만료 → 로그아웃
+          localStorage.clear();
+          window.location.replace('/login');
+          return;
+        }
+
+        if (errorCode === 'INVALID_TOKEN' || errorCode === 'TOKEN_NOT_FOUND') {
+          // 토큰 자체가 잘못됨 → 로그아웃
+          localStorage.clear();
+          window.location.replace('/login');
+          return;
+        }
+
+        if (errorCode === 'INTERNAL_SERVER_ERROR') {
+          // 서버 오류 → 연결만 끊기
+          setConnected(false);
+          return;
+        }
+
+        // 그 외 알 수 없는 오류
         setConnected(false);
       },
+      onDisconnect: () => setConnected(false),
     });
 
     client.activate();
     clientRef.current = client;
 
-    // 언마운트 or chatRoomId 변경 시 연결 끊기
     return () => {
       client.deactivate();
       clientRef.current = null;

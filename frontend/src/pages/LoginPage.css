@@ -151,3 +151,40 @@
   background: #b2dfbc;
   cursor: not-allowed;
 }
+
+/* 구글 로그인 */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 1rem 0;
+}
+
+.divider-line {
+  flex: 1;
+  height: 1px;
+  background: #e2e2e2;
+}
+
+.divider-text {
+  font-size: 12px;
+  color: #aaa;
+}
+
+.oauth-btn {
+  width: 100%;
+  padding: 12px;
+  background: #fff;
+  border: 1px solid #e2e2e2;
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.oauth-btn:hover {
+  background: #f6f6f2;
+}
