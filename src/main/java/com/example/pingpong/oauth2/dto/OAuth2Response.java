@@ -1,4 +1,4 @@
-package com.example.pingpong.service.dto.oauth;
+package com.example.pingpong.oauth2.dto;
 
 public interface OAuth2Response {
 
