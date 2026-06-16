@@ -24,6 +24,8 @@ public class User extends BaseEntity {
     @Column
     private String password;
     private String profileImage;
+    @Column(unique = true)
+    private String providerUserId;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -46,9 +48,10 @@ public class User extends BaseEntity {
         return user;
     }
 
-    public static User createOAuthUser(String username, String email, String profileImage, UserRole userRole) {
+    public static User createOAuthUser(String username, String email, String profileImage, String providerUserId, UserRole userRole) {
         User user = new User(username, email, null);
         user.profileImage = profileImage;
+        user.providerUserId = providerUserId;
         user.role = userRole;
         return user;
     }
