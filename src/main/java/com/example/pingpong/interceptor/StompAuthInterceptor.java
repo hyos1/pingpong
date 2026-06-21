@@ -72,6 +72,7 @@ public class StompAuthInterceptor implements ChannelInterceptor {
                 return createErrorMessage(accessor, INTERNAL_SERVER_ERROR.name(), INVALID_TOKEN.getMessage());
             }
         }
+
         return message;
     }
 
