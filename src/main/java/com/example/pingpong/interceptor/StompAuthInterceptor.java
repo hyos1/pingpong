@@ -16,7 +16,6 @@ import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
-import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -37,8 +36,8 @@ public class StompAuthInterceptor implements ChannelInterceptor {
 
         if (accessor == null) return message;
 
-        // 첫 연결(CONNECT)일 때만 실행
-        if (StompCommand.CONNECT.equals(accessor.getCommand())) {
+        // 첫 연결(CONNECT) 또는 메세지 전송(SEND) 둘 다 검사하도록 확장
+        if (StompCommand.CONNECT.equals(accessor.getCommand()) || StompCommand.SEND.equals(accessor.getCommand())) {
             // Authorization헤더 배열의 여러 값 중 첫 번째 값"
             String bearerToken = accessor.getFirstNativeHeader("Authorization");
 
@@ -59,29 +58,20 @@ public class StompAuthInterceptor implements ChannelInterceptor {
                 accessor.setUser(authentication);
 
             } catch (ExpiredJwtException e) {
-                log.info("[STOMP JWT 만료]: userId={}", e.getClaims().getSubject());
-                return createErrorMessage(accessor, TOKEN_EXPIRED.name(), TOKEN_EXPIRED.getMessage());
+                log.info("[STOMP {} 시 JWT 만료]: userId={}", accessor.getCommand(), e.getClaims().getSubject());
+                throw new ClientException(TOKEN_EXPIRED);
             } catch (ClientException e) {
-                log.warn("[STOMP 인증 실패] 토큰 형식 문제 발생: {}", e.getMessage());
-                return createErrorMessage(accessor, e.getErrorCode().name(), e.getMessage());
+                log.warn("[STOMP {} 시 인증 실패] 토큰 형식 문제 발생: {}", accessor.getCommand(), e.getMessage());
+                throw e;
             } catch (SecurityException | MalformedJwtException | UnsupportedJwtException e) {
-                log.error("[STOMP JWT 검증 실패] [{}]: ", e.getClass().getSimpleName(), e);
-                return createErrorMessage(accessor, INVALID_TOKEN.name(), INVALID_TOKEN.getMessage());
+                log.error("[STOMP {} 시 JWT 검증 실패] [{}]: ", accessor.getCommand(), e.getClass().getSimpleName(), e);
+                throw new ClientException(INVALID_TOKEN);
             } catch (Exception e) {
-                log.error("[STOMP 인증 실패] 알 수 없는 시스템 오류 발생: ", e);
-                return createErrorMessage(accessor, INTERNAL_SERVER_ERROR.name(), INVALID_TOKEN.getMessage());
+                log.error("[STOMP {} 시 인증 실패] 알 수 없는 시스템 오류 발생: ", accessor.getCommand(), e);
+                throw new ClientException(INTERNAL_SERVER_ERROR);
             }
         }
 
         return message;
-    }
-
-    private Message<byte[]> createErrorMessage(StompHeaderAccessor accessor, String errorCode, String message) {
-        StompHeaderAccessor errorAccessor = StompHeaderAccessor.create(StompCommand.ERROR);
-        errorAccessor.setMessage(message);
-        errorAccessor.setHeader("errorCode", errorCode);
-        errorAccessor.setSessionId(accessor.getSessionId());
-        errorAccessor.setSessionAttributes(accessor.getSessionAttributes());
-        return MessageBuilder.createMessage(new byte[0], errorAccessor.getMessageHeaders());
     }
 }
